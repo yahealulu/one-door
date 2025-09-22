@@ -22,6 +22,16 @@ const Footer = () => {
     return () => observer.disconnect();
   }, []);
 
+  const handleNavigation = (sectionId: string) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      // If we're not on the home page, navigate to it first
+      window.location.href = `/#${sectionId}`;
+    }
+  };
+
   return (
     <footer ref={footerRef} className="bg-secondary/30 border-t border-border/30">
       <div className="container mx-auto px-6 py-16">
@@ -88,13 +98,21 @@ const Footer = () => {
               Quick Links
             </h4>
             <ul className="space-y-3">
-              {['About Us', 'Services', 'Our Clients', 'Contact Us'].map((link) => (
-                <li key={link}>
+              {[
+                { name: 'About Us', id: 'about-us' },
+                { name: 'Services', id: 'services' },
+                { name: 'Our Clients', id: 'clients' },
+                { name: 'Contact Us', id: 'contact' }
+              ].map((link) => (
+                <li key={link.name}>
                   <a 
-                    href={`#${link.toLowerCase().replace(' ', '-')}`}
-                    className="text-muted-foreground hover:text-primary transition-colors duration-300"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavigation(link.id);
+                    }}
+                    className="text-muted-foreground hover:text-primary transition-colors duration-300 cursor-pointer"
                   >
-                    {link}
+                    {link.name}
                   </a>
                 </li>
               ))}

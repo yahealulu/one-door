@@ -1,9 +1,21 @@
+import { useState, useEffect, useRef } from 'react';
+import { useScroll, useTransform, motion } from 'framer-motion';
 import { useIsMobile } from '../hooks/use-mobile';
 
 const HeroSection = () => {
   const isMobile = useIsMobile();
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 800], [0, -200]);
+  const opacity = useTransform(scrollY, [0, 600], [1, 0.5]);
+
   return (
-    <section id="hero" className="relative min-h-screen flex items-end justify-center overflow-hidden">
+    <motion.section 
+      id="hero" 
+      ref={sectionRef}
+      className="relative min-h-screen flex items-end justify-center overflow-hidden"
+      style={{ y, opacity }}
+    >
       {isMobile ? (
         // Mobile: Advanced creative design instead of video
         <>
@@ -132,7 +144,7 @@ const HeroSection = () => {
           </div>
         </>
       )}
-    </section>
+    </motion.section>
   );
 };
 
