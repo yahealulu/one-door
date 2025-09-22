@@ -76,7 +76,7 @@
   }
 
   html {
-    scroll-behavior: smooth;
+    scroll-beavior: smooth;
   }
 }
 
@@ -260,7 +260,21 @@
 }
 
 .animate-fade-in {
-  animation: fade-in 0.6s ease-out forwards;
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+/* Add pulse animation for terminal cursor */
+.animate-pulse {
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 /* Activities Section Improvements */
@@ -307,4 +321,9 @@
 .mobile-gallery-image {
   user-select: none;
   -webkit-user-drag: none;
+}
+
+/* Progress bar animation */
+.progress-bar {
+  transition: width 0.2s ease-out;
 }

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useAnimation } from 'framer-motion';
 import { Star, Code, Smartphone, Globe, Database, Cpu, Zap, Quote } from 'lucide-react';
 
 const testimonials = [
@@ -80,10 +80,15 @@ const testimonials = [
 // Duplicate testimonials for infinite scroll
 const leftColumnTestimonials = [...testimonials, ...testimonials];
 const rightColumnTestimonials = [...testimonials.slice().reverse(), ...testimonials.slice().reverse()];
+const mobileTestimonials = [...testimonials, ...testimonials];
 
 const TestimonialsSection = () => {
   const [inView, setInView] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  
+  // Mobile slider controls
+  const leftControls = useAnimation();
+  const rightControls = useAnimation();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -101,6 +106,30 @@ const TestimonialsSection = () => {
 
     return () => observer.disconnect();
   }, []);
+
+  // Start animations when in view
+  useEffect(() => {
+    if (inView) {
+      // Desktop animations
+      leftControls.start({
+        y: [-600, 0],
+        transition: {
+          duration: 30,
+          repeat: Infinity,
+          ease: "linear"
+        }
+      });
+      
+      rightControls.start({
+        y: [0, -600],
+        transition: {
+          duration: 25,
+          repeat: Infinity,
+          ease: "linear"
+        }
+      });
+    }
+  }, [inView, leftControls, rightControls]);
 
   const getPlatformIcon = (platform: string) => {
     const iconClass = "w-5 h-5";
@@ -126,6 +155,36 @@ const TestimonialsSection = () => {
       animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
       transition={{ delay: index * 0.1, duration: 0.6 }}
       className="bg-card/80 backdrop-blur-sm border border-border/20 rounded-2xl p-6 mb-6 hover:shadow-elegant transition-all duration-300 hover:border-primary/20 group"
+    >
+      <div className="flex items-start justify-between mb-4">
+        <Quote className="w-6 h-6 text-primary/60 group-hover:text-primary transition-colors" />
+        {getPlatformIcon(testimonial.platform)}
+      </div>
+
+      <p className="text-muted-foreground mb-6 leading-relaxed text-sm">
+        "{testimonial.content}"
+      </p>
+
+      <div className="flex items-center justify-between">
+        <div>
+          <h4 className="font-semibold text-sm">{testimonial.name}</h4>
+          <p className="text-xs text-muted-foreground">{testimonial.role}</p>
+          <p className="text-xs text-primary/60 mt-1">{testimonial.handle}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs font-medium text-muted-foreground">{testimonial.company}</p>
+        </div>
+      </div>
+    </motion.div>
+  );
+
+  const MobileTestimonialCard = ({ testimonial, index }: { testimonial: typeof testimonials[0], index: number }) => (
+    <motion.div
+      initial={{ opacity: 0, x: 50 }}
+      animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
+      transition={{ delay: index * 0.1, duration: 0.6 }}
+      className="bg-card/80 backdrop-blur-sm border border-border/20 rounded-2xl p-6 hover:shadow-elegant transition-all duration-300 hover:border-primary/20 group flex-shrink-0"
+      style={{ width: '280px' }}
     >
       <div className="flex items-start justify-between mb-4">
         <Quote className="w-6 h-6 text-primary/60 group-hover:text-primary transition-colors" />
@@ -315,12 +374,7 @@ const TestimonialsSection = () => {
             {/* Left Column - Scrolling Up */}
             <div className="space-y-6">
               <motion.div
-                animate={{ y: [-600, 0] }}
-                transition={{
-                  duration: 30,
-                  repeat: Infinity,
-                  ease: "linear"
-                }}
+                animate={leftControls}
                 className="space-y-6"
               >
                 {leftColumnTestimonials.map((testimonial, index) => (
@@ -332,12 +386,7 @@ const TestimonialsSection = () => {
             {/* Right Column - Scrolling Down */}
             <div className="space-y-6">
               <motion.div
-                animate={{ y: [0, -600] }}
-                transition={{
-                  duration: 25,
-                  repeat: Infinity,
-                  ease: "linear"
-                }}
+                animate={rightControls}
                 className="space-y-6"
               >
                 {rightColumnTestimonials.map((testimonial, index) => (
@@ -348,7 +397,7 @@ const TestimonialsSection = () => {
           </div>
         </div>
 
-        {/* Mobile Layout */}
+        {/* Mobile Layout - Two Horizontal Sliders */}
         <div className="lg:hidden">
           <div className="mb-12 flex justify-center">
             <div className="w-64">
@@ -356,10 +405,44 @@ const TestimonialsSection = () => {
             </div>
           </div>
           
-          <div className="space-y-6">
-            {testimonials.slice(0, 4).map((testimonial, index) => (
-              <TestimonialCard key={testimonial.id} testimonial={testimonial} index={index} />
-            ))}
+          <div className="space-y-8">
+            {/* Left Slider */}
+            <div className="overflow-hidden">
+              <motion.div
+                animate={{
+                  x: ["0%", "-100%"]
+                }}
+                transition={{
+                  duration: 22.5, // 25% faster than 30 seconds
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+                className="flex space-x-4"
+              >
+                {mobileTestimonials.map((testimonial, index) => (
+                  <MobileTestimonialCard key={`left-${testimonial.id}-${index}`} testimonial={testimonial} index={index} />
+                ))}
+              </motion.div>
+            </div>
+            
+            {/* Right Slider */}
+            <div className="overflow-hidden">
+              <motion.div
+                animate={{
+                  x: ["-100%", "0%"]
+                }}
+                transition={{
+                  duration: 18.75, // 25% faster than 25 seconds
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+                className="flex space-x-4"
+              >
+                {[...mobileTestimonials].reverse().map((testimonial, index) => (
+                  <MobileTestimonialCard key={`right-${testimonial.id}-${index}`} testimonial={testimonial} index={index} />
+                ))}
+              </motion.div>
+            </div>
           </div>
         </div>
       </div>

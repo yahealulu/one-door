@@ -7,6 +7,7 @@ import Header from '../components/Header';
 import HeroSection from '../components/HeroSection';
 import ServicesSection from '../components/ServicesSection';
 import ClientsSection from '../components/ClientsSection';
+import IndustriesSection from '../components/IndustriesSection';
 import AchievementsSection from '../components/AchievementsSection';
 import ContactSection from '../components/ContactSection';
 import ActivitiesSection from '../components/ActivitiesSection';
@@ -64,6 +65,7 @@ const Index = () => {
         <HeroSection />
         <ServicesSection />
         <ClientsSection />
+        <IndustriesSection />
         <AchievementsSection />
         <TestimonialsSection />
         <motion.div
